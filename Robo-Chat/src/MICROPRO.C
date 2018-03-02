@@ -7,6 +7,7 @@
 #include<time.h>
 
 time_t t;
+int c1=0;
 
 
 char facts[][100]={"Banging your head against a wall burns 150 calories  an hour!","When Hippos are upset, their sweat turns red!","A flock of crows is known as a murder!","Cherophobia is the fear of fun!","King Henry VIII slept with a gigantic axe beside him.","An eagle can kill a young deer and fly away with it!","There is a species of Spider called the Hobo Spider.","A Lion's roar can be heard from 5 miles away!","Facebook, Twitter and Skype are all banned in China!" };
@@ -29,7 +30,12 @@ void display_progress_bar(int p)
 
 int commands(char command[])
 {
+    //FILE *fp;
+    char title[50];
     char response[100];
+    char date[20];
+    char time1[10];
+    char ch;
     char r ='Y';
     while(r=='Y')
     {
@@ -77,10 +83,52 @@ if(strcmpi(command,"time")==0 || strcmpi(command,"show me the time")==0 || strcm
         break;
     }
 
+else if(strcmpi(command,"rset")==0 || strcmpi(command,"set a reminder")==0 || strcmpi(command,"2")==0)
+{
+    FILE *fp = fopen("reminders.txt","a");
+    printf("\n What do you want to be reminded of ? \n Title: ");
+    gets(title);
+    printf("\n Date: ");
+    gets(date);
+    printf("\n Time: ");
+    gets(time1);
+    //printf("Confirm? Y/N: ");
+    //scanf("%c",ch);
+    //if(ch=='Y'|| ch=='y')
+    //{
+        fputs(title,fp);
+        fputs(" ",fp);
+        fputs(time1,fp);
+        fputs(" ",fp);
+        fputs(date,fp);
+        fputs("\n",fp);
+        fclose(fp);
+        printf("\n Successfully created reminder!");
+        c1++;
+        break;
+
+    //}
+
+
+    }
+    else if(strcmpi(command,"Show reminders")==0 || strcmpi(command,"rshow")==0 ||strcmpi(command,"reminders")==0 || strcmpi(command,"show my reminders")==0)
+{
+    int i;
+    char rem[100];
+FILE *fp = fopen("reminders.txt","r");
+for(i=1;i<=c1;i++)
+{
+printf("\n Reminder : %s",fgets(rem,50,fp));
+}
+fclose(fp);
+break;
+}
+
+
 
     printf("\n Sorry, I didn't understand. Please try again!");
-    printf("\n Try: \n * Show me the time \n * Tell me a fact \n * Roll a die \n * Set a reminder \n * Remove a reminder");
-
+    printf("\n Try: \n * Show me the time \n * Tell me a fact \n * Roll a die \n * Set a reminder \n * Remove a reminder \n * Show reminders");
+    break;
     }
 }
 
