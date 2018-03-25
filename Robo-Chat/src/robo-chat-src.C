@@ -16,6 +16,8 @@ int c1=1;
 
 char facts[][100]={"Banging your head against a wall burns 150 calories  an hour!","When Hippos are upset, their sweat turns red!","A flock of crows is known as a murder!","Cherophobia is the fear of fun!","King Henry VIII slept with a gigantic axe beside him.","An eagle can kill a young deer and fly away with it!","There is a species of Spider called the Hobo Spider.","A Lion's roar can be heard from 5 miles away!","Facebook, Twitter and Skype are all banned in China!","If you lift a kangaroo's tail, it can't hop!" };
 //Random facts are stored in an array
+char replies[][100]={"I'm Good, and you? ","Cool. You? ","Great, what about you? ","Life's great. What about you? "};
+const size_t replies_count = sizeof(replies)/sizeof(replies[0]);
 const size_t facts_count = sizeof(facts)/sizeof(facts[0]); //Randomizing calculations
 void print_n_chars(int n, int c)
 {
@@ -152,6 +154,9 @@ if(strcmpi(command,"help")==0 || strcmpi(command,"h")==0)
     printf("\n\ttime \t- Show time");
     printf("\n\troll \t- Roll a die");
     printf("\n\tnotes \t- Take notes");
+    printf("\n\trshow \t- Show Reminders");
+    printf("\n\tto do list \t-To do list");
+
     printf("\nEnter any key to continue");
     getch();
     return 0;
@@ -159,7 +164,7 @@ if(strcmpi(command,"help")==0 || strcmpi(command,"h")==0)
 
 if(strcmpi(command,"How are you?")==0 || strcmpi(command,"Whats up?")==0 || strcmpi(command,"How's everything?")==0)
 {
-    printf("I am doing well. What about you? ");
+   printf("%s \n",replies[rand() % replies_count]);
     gets(response);
     if(strcmpi(response,"Fine")==0 || strcmpi(response,"I am fine")==0 || strcmpi(response,"I am doing well")==0)
     {
@@ -287,10 +292,11 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
     char c,ch,a;
     char task[100],temp_task[100], checked[2]="N",task_reader[50];
     int size,choice;
-    int pos_remove, ctr = 0,f=1,c1=1,n=1;
+    static int no_of_tasks = 0;
+    int pos_remove, ctr = 0,f=1,c1=1,n=1,i,j;
     char status[2]="Y";
     char str[100],user_confirm,buffer[100];
-    FILE *fp, *f2;
+    FILE *fp, *f2, *f3, *f4;
     time_t raw_time;
     struct tm *ptr_ts;
     time ( &raw_time );
@@ -309,6 +315,11 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
         {
             fp = fopen("tasks.txt","w");
             printf("\n Resetting tasks. Please wait for 1 minute!");
+            no_of_tasks = 0;
+            f3 = fopen("no_of_tasks.txt", "w");
+            fprintf(f3,"%d",no_of_tasks);
+            fclose(f3);
+
         }
     else
     {
@@ -327,12 +338,23 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
         printf("\n What is the task? ");
         fflush(stdin);
         gets(task);
+
+        f4 = fopen("no_of_tasks.txt","r");
+        fscanf(f4,"%d",&no_of_tasks);
+        fclose(f4);
+
+        no_of_tasks++;
+        f3 = fopen("no_of_tasks.txt", "w");
+        fprintf(f3,"%d",no_of_tasks);
+        fclose(f3);
         fp = fopen("tasks.txt","a");
         fputs(task,fp);
         fputs("\n",fp);
         fputs(checked,fp);
+
         fputs("\n",fp);
         fclose(fp);
+
         printf("\n Task added!");
         break;
 
@@ -359,8 +381,13 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
                     fprintf(f2,"%s",str);
                 else
                 {
+
                     if(str[0]=='N')
-                        fprintf(f2,"%s",status);
+                    {
+                    fprintf(f2,"%s",status);
+
+                    }
+
 
                 }
                 }
@@ -386,31 +413,51 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
 
            printf("\n No tasks for today!");
            fclose(fp);
+           no_of_tasks = 0;
+           f3 = fopen("no_of_tasks.txt", "w");
+           fprintf(f3,"%d",no_of_tasks);
+           fclose(f3);
+
+
            break;
          }
 
          else{
             rewind(fp);
+            i = 0;
+
+            f4 = fopen("no_of_tasks.txt","r");
+            fscanf(f4,"%d",&no_of_tasks);
+            fclose(f4);
+            i = (no_of_tasks);
+            printf("i= %d",i);
+
             while((c=getc(fp)) != EOF)
             {
+                if(n>(no_of_tasks+i))
+                    break;
                 if(n%2!=0)
                 {
                     printf("\n Task : %c%s",c,fgets(buffer,50,fp));
                     n++;
 
                 }
+
+
+
                 else
                 {
                     printf("\n Completed(Y/N): %c",c);
                     n++;
 
-                }
-            }
 
+                }
+
+            }
             fclose(fp);
             break;
 
-         }
+    }
         break;
 
    }
@@ -514,6 +561,7 @@ for(p=0;p<=100;++p)
 printf("\n LOADING COMPLETED! Press any key to continue....");
 getch();
 system("cls");
+
 
 printf("\n Welcome ");
 puts(name);
