@@ -65,7 +65,7 @@ int inputyear(void) //For inputting the year
 	return year; //Year is passed to determineleapyear()
 }
 
-int determinedaycode(int year)
+int determinedaycode(int year) //Determines which date is under which day
 {
 	int daycode;
 	int d1, d2, d3;
@@ -92,7 +92,7 @@ int determineleapyear(int year) //After calculations, year is passed determineda
 	}
 }
 
-void calendar(int year, int daycode)
+void calendar(int year, int daycode) //For displaying the calendar
 {
 	int month, day,count=0;
 	for ( month = 1; month <= 12; month++ )
@@ -130,7 +130,7 @@ void calendar(int year, int daycode)
 
 
 
-int commands(char command[])
+int commands(char command[]) //The function for checking the command and replying
 {
     //FILE *fp;
     char title[50];
@@ -143,7 +143,7 @@ int commands(char command[])
     {
 
 
-if(strcmpi(command,"help")==0 || strcmpi(command,"h")==0)
+if(strcmpi(command,"help")==0 || strcmpi(command,"h")==0) //Help for the user
 {
     printf("\n HELP");
     printf("\n Standard Commands");
@@ -162,35 +162,35 @@ if(strcmpi(command,"help")==0 || strcmpi(command,"h")==0)
     return 0;
 }
 
-if(strcmpi(command,"How are you?")==0 || strcmpi(command,"Whats up?")==0 || strcmpi(command,"How's everything?")==0)
+if(strcmpi(command,"How are you?")==0 || strcmpi(command,"Whats up?")==0 || strcmpi(command,"How's everything?")==0) //General Conversation
 {
-   printf("%s \n",replies[rand() % replies_count]);
-    gets(response);
+   printf("%s \n",replies[rand() % replies_count]); //Takes a random value from the replies array
+    gets(response); //To get the response from user
     if(strcmpi(response,"Fine")==0 || strcmpi(response,"I am fine")==0 || strcmpi(response,"I am doing well")==0)
     {
-        printf("\n That's great!");
+        printf("\n That's great!"); //Positively replies if user is positive
         break;
     }
-    else if(strcmpi(response,"Not well")==0)
+    else if(strcmpi(response,"Not well")==0) //Checking whether the user replies negatively
         printf("\n Sorry to hear about that. Hope you feel better");
         break;
 }
 
 if(strcmpi(command,"fact")==0 || strcmpi(command,"tell me a fact")==0 || strcmpi(command,"show fact")==0)
 {
-    printf("%s \n",facts[rand() % facts_count]);
+    printf("%s \n",facts[rand() % facts_count]); //Displays a random fact from the facts array
     break;
 }
 if(strcmpi(command,"time")==0 || strcmpi(command,"show me the time")==0 || strcmpi(command,"What time is it?")==0|| strcmpi(command,"3")==0)
     {
         time(&t);
-        printf("Today's current date and time: %s",ctime(&t));
+        printf("Today's current date and time: %s",ctime(&t)); //Displays the current system time
         break;
     }
 
 if(strcmpi(command,"rset")==0 || strcmpi(command,"set a reminder")==0 || strcmpi(command,"2")==0)
 {
-    FILE *fp = fopen("reminders.txt","a");
+    FILE *fp = fopen("reminders.txt","a"); //Opens the file in append mode - To insert at the end of file
     printf("\n What do you want to be reminded of ? \n Title: ");
     gets(title);
     printf("\n Date: ");
@@ -201,7 +201,7 @@ if(strcmpi(command,"rset")==0 || strcmpi(command,"set a reminder")==0 || strcmpi
     //scanf("%c",ch);
     //if(ch=='Y'|| ch=='y')
     //{
-        fputs(title,fp);
+        fputs(title,fp); //Writes to the file
         fputs(" ",fp);
         fputs(time1,fp);
         fputs(" ",fp);
@@ -223,12 +223,21 @@ if(strcmpi(command,"Show reminders")==0 || strcmpi(command,"rshow")==0 ||strcmpi
     char c;
     char buffer[100];
 FILE *fp = fopen("reminders.txt","r");
+fseek (fp, 0, SEEK_END);
+        if(ftell(fp) == 0)
+         {
+
+           printf("\n No reminders");
+           fclose(fp);
+           break;
+         }
+         rewind(fp);
 printf("\n              Title  Time   Date");
 
 while((c=getc(fp)) != EOF)
 {
 
-        printf("\n Reminder %d : %c%s",c1,c,fgets(buffer,50,fp));
+        printf("\n Reminder %d : %c%s",c1,c,fgets(buffer,50,fp)); //Displays the reminder according to what is fetched from the file
         c1++;
 
 }
@@ -249,14 +258,14 @@ if(strcmpi(command,"Calendar")==0 || strcmpi(command,"Show calendar") == 0 || st
 
 }
 
-if(strcmpi(command,"Remove reminder")==0 || strcmpi(command,"rdel")==0 || strcmpi(command,"Delete reminders")==0)
+if(strcmpi(command,"Remove a reminder")==0 || strcmpi(command,"rdel")==0 || strcmpi(command,"Delete reminders")==0 || strcmpi(command,"Remove reminder") == 0)
 {
     FILE *fp = fopen("reminders.txt","r");
     FILE *f2 = fopen("temp.txt", "w");
     int pos_remove, ctr = 0,f=1;
     char str[100],ch;
     printf("\n Enter reminder number to remove: ");
-    scanf("%d",&pos_remove);
+    scanf("%d",&pos_remove); //Gets the reminder number so as to remove that line
 
     while(!feof(fp))
     {
@@ -265,17 +274,17 @@ if(strcmpi(command,"Remove reminder")==0 || strcmpi(command,"rdel")==0 || strcmp
         if(!feof(fp))
         {
             ctr++;
-            if(ctr!= pos_remove)
-                fprintf(f2,"%s",str);
+            if(ctr!= pos_remove) //Checks whether the reminder has come or not
+                fprintf(f2,"%s",str); //Writes if the reminder line is not found to a temporary file
         }
     }
     fclose(fp);
     fclose(f2);
-    remove("reminders.txt");
-    rename("temp.txt","reminders.txt");
+    remove("reminders.txt"); //removes the file reminders.txt
+    rename("temp.txt","reminders.txt"); //renames the temporary file to default reminders.txt
     fp = fopen("reminders.txt","r");
     ch = fgetc(fp);
-    while(ch!=EOF)
+    while(ch!=EOF) //Prints whatever is left after deleting the reminder
     {
         printf("%c",ch);
         ch = fgetc(fp);
@@ -288,7 +297,7 @@ if(strcmpi(command,"Remove reminder")==0 || strcmpi(command,"rdel")==0 || strcmp
 }
 if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do today") == 0 || strcmpi(command,"Set tasks") == 0 || strcmpi(command, "Show me to-do list") == 0)
 {
-    system("cls");
+    system("cls"); //For clearing the screen
     char c,ch,a;
     char task[100],temp_task[100], checked[2]="N",task_reader[50];
     int size,choice;
@@ -296,9 +305,9 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
     int pos_remove, ctr = 0,f=1,c1=1,n=1,i,j;
     char status[2]="Y";
     char str[100],user_confirm,buffer[100];
-    FILE *fp, *f2, *f3, *f4;
-    time_t raw_time;
-    struct tm *ptr_ts;
+    FILE *fp, *f2, *f3, *f4; //File Pointers to open files in various modes
+    time_t raw_time; //A variable of time
+    struct tm *ptr_ts; //To check the time (If 00:00 hrs, the file resets)
     time ( &raw_time );
     ptr_ts = localtime( &raw_time );
     //fp=fopen("tasks.txt","r");
@@ -356,6 +365,9 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
         fclose(fp);
 
         printf("\n Task added!");
+        printf("\n Enter any key to continue....");
+        getch();
+        system("cls");
         break;
 
     case 2:
@@ -397,10 +409,16 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
     remove("tasks.txt");
     rename("temp_tasks.txt","tasks.txt");
     printf("\n Status changed to Y");
+    printf("\n Enter any key to continue....");
+    getch();
+    system("cls");
     break;
     }
     else{
         printf("\n Cancelled changes!");
+        printf("\n Enter any key to continue....");
+        getch();
+    system("cls");
         break;
     }
 
@@ -417,7 +435,9 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
            f3 = fopen("no_of_tasks.txt", "w");
            fprintf(f3,"%d",no_of_tasks);
            fclose(f3);
-
+           printf("\n Enter any key to continue....");
+           getch();
+           system("cls");
 
            break;
          }
@@ -455,6 +475,9 @@ if(strcmpi(command,"To do list")== 0 || strcmpi(command,"Show me what to do toda
 
             }
             fclose(fp);
+            printf("\n Enter any key to continue....");
+            getch();
+            system("cls");
             break;
 
     }
@@ -469,14 +492,227 @@ break;
 
     }
 
+if(strcmpi(command,"Roll a die") == 0 || strcmpi(command,"Roll") == 0 || strcmpi(command,"Dice roll")==0)
+{
+    int r;
+    system("cls");
+    printf("\n*****************************************************************************");
 
+    printf("\n Rolling the die....");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$         @        $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
 
+    Sleep(600);
+    system("cls");
+    printf("\n Rolling the die....");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$      @     @     $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
 
+    Sleep(600);
+    system("cls");
+    printf("\n Rolling the die....");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    printf("\n $$                  $$");
+    printf("\n $$         @        $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$   @         @    $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    Sleep(600);
+    system("cls");
+    printf("\n Rolling the die....");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$   @          @   $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$   @          @   $$");
+    printf("\n $$                  $$");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    Sleep(600);
+    system("cls");
+    printf("\n Rolling the die....");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    printf("\n $$                  $$");
+    printf("\n $$   @           @  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$        @         $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$   @           @  $$");
+    printf("\n $$                  $$");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    Sleep(600);
+    system("cls");
+    printf("\n Rolling the die....");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    printf("\n $$                  $$");
+    printf("\n $$   @     @    @   $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$                  $$");
+    printf("\n $$  @      @    @   $$");
+    printf("\n $$                  $$");
+    printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+    Sleep(700);
+
+    r = ((rand() % 6) + 1); //Taking a random number from 1 to 6
+    if(r == 1)
+    {
+        system("cls");
+        printf("\n You rolled:");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$         @        $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        break;
+
+    }
+    if(r == 2)
+    {
+        system("cls");
+        printf("\n You rolled: ");
+
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$      @     @     $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        break;
+    }
+    if(r == 3)
+    {
+        system("cls");
+         printf("\n You rolled: ");
+         printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        printf("\n $$                  $$");
+        printf("\n $$         @        $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$   @         @    $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        break;
+    }
+    if(r == 4)
+    {
+        system("cls");
+        printf("\n You rolled: ");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$   @          @   $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$   @          @   $$");
+        printf("\n $$                  $$");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        break;
+    }
+    if(r == 5)
+    {
+        system("cls");
+        printf("\n You rolled:");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        printf("\n $$                  $$");
+        printf("\n $$   @           @  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$        @         $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$   @           @  $$");
+        printf("\n $$                  $$");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        break;
+    }
+
+    if(r == 6)
+    {
+        system("cls");
+        printf("\n You rolled: ");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        printf("\n $$                  $$");
+        printf("\n $$   @     @    @   $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$                  $$");
+        printf("\n $$  @      @    @   $$");
+        printf("\n $$                  $$");
+        printf("\n $$$$$$$$$$$$$$$$$$$$$$");
+        break;
+    }
+    break;
+}
+
+if(strcmpi(command,"take notes") == 0 || strcmpi(command,"notes")==0)
+{
+    system("notepad");
+    break;
+}
+if(strcmpi(command,"Open music app")==0)
+{
+    system("start wmplayer.exe");
+    break;
+}
+
+    //Print this if the entered command does not match the script
     printf("\n Sorry, I didn't understand. Please try again!");
-    printf("\n Try: \n * Show me the time \n * Tell me a fact \n * Roll a die \n * Set a reminder \n * Remove a reminder \n * Show reminders");
+    printf("\n Try: \n * Show me the time \n * Tell me a fact \n * Roll a die \n * Set a reminder \n * Remove a reminder \n * Show reminders \n * Open music app \n * Take notes \n * To do list \n * Show calendar \n");
     break;
 
     }
+
+
+
 }
 
 int main()
@@ -629,10 +865,10 @@ while(r==-1)
  printf("\n Hey, what do you want me to do for you?");
  printf("\n robochat/user/comm> ");
 fflush(stdin);
- gets(command);
- if(strcmpi(command,"quit")==0 || strcmpi(command,"q")==0)
+ gets(command); //Gets the command from the user
+ if(strcmpi(command,"quit")==0 || strcmpi(command,"q")==0) //Checks whether the given command is quit or q
     {
-        exit(0);
+        exit(0); //If yes, it quits from the program
     }
  commands(command);
 
